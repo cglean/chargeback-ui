@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.chargeback.rest.clients.ChargeBackApiRestClient;
+import com.chargeback.util.RestClientConstants;
 import com.chargeback.vo.ChartVO;
 import com.chargeback.vo.UsageRecord;
 
@@ -29,6 +30,7 @@ public class ChargeBackController {
 	@Autowired
 	ChargeBackApiRestClient metricsClient;
 
+	// TODO
 	@RequestMapping(value = "/getResourceDetailsSummary", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	private String getSummary() {
 
@@ -50,12 +52,11 @@ public class ChargeBackController {
 	 * @param space
 	 * @return
 	 */
-	@RequestMapping(value = "/getResourceDetails/{usageType}/{resourceType}/{orgName:.+}/{space:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = RestClientConstants.GET_RESOURCE_DETAILS, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ChartVO getResourceUsage(@PathVariable String usageType, @PathVariable String resourceType,
 			@PathVariable String orgName, @PathVariable String space) {
 
 		final ResponseEntity<List<UsageRecord>> response = metricsClient.fetchInstanceMetrics();
-
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> usedResourceFunction = null;
 		Function<ResponseEntity<List<UsageRecord>>, List<String>> appLabelFunction = null;
 
@@ -80,32 +81,28 @@ public class ChargeBackController {
 		} else {
 			throw new RuntimeException("Please Select Resource Type from : CPU, DISK, MEM");
 		}
-
 		appLabelFunction = appLabel -> response.getBody().stream().filter(
 				usageRecord -> (usageRecord.getOrgName().equals(orgName) && usageRecord.getSpaceName().equals(space)))
 				.map(usageRecord -> usageRecord.getAppname().concat(" - ").concat(usageRecord.getInstanceIndex()))
 				.collect(Collectors.toList());
-
 		if (usageType.equals("UNUSED")) {
 			if (!resourceType.equals("DISK")) {
-
 				return getUnUsedResource(response, metricsClient.getFreeResourceValue(resourceType),
 						usedResourceFunction, appLabelFunction);
 			} else {
 				throw new RuntimeException("Not able to get total disk usage as of now");
 			}
-
 		}
 		return getParameterizedUsageDetails(response, usedResourceFunction, appLabelFunction);
 	}
 
-	@RequestMapping(value = "/getOrgList", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = RestClientConstants.GET_ORG_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getOrganizationNames() {
 
 		return metricsClient.getOrgList().getBody();
 	}
 
-	@RequestMapping(value = "/getSpaceList/{orgName:.+}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+	@RequestMapping(value = RestClientConstants.GET_SPACE_LIST, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public List<String> getSpaceList(@PathVariable String orgName) {
 
 		return metricsClient.getSpaceList(orgName).getBody();

@@ -9,9 +9,12 @@ import org.springframework.cloud.netflix.feign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class })
 @EnableEurekaClient
 @EnableFeignClients
+@EnableSwagger2
 public class ChargebackMicroApplication {
 
 	
