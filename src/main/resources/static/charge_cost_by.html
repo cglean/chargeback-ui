@@ -24,7 +24,7 @@
 
 <style>
 .navbar.navbar-inverse.navbar-fixed-top {
-	background-color: #3399FF;
+	background-color: #0082AE;
 }
 
 .navbar-inverse .navbar-brand {
@@ -36,27 +36,44 @@
 }
 
 .nav-pills li a {
-color:#000;background-color:#337ab7;
+color:#fff;background-color:#337abf;
 }
+
+.nav-pills li a:hover {
+color:#000;background-color:#337abf;
+}
+
+.nav-pills li a:focus {
+color:#000;background-color:#337abf;
+}
+
+
+.nav-pills li.active a:focus{
+color:#fff;background-color:#99ccff;
+}
+
+.nav-pills li.active a:hover{
+color:#fff;background-color:#99ccff;
+}
+
 </style>
 
 
 </head>
-<body onLoad="getOrganisations();">
+<body onLoad="displayBasedOnTab();">
 	<nav class="navbar navbar-inverse navbar-fixed-top"  role="navigation">
-		<div class="container">
+		<div class="container" >
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header" >
-			<img src="partner-capgemini.jpg" style="width: 200px; height: 70px; float:left;" />&nbsp;
-				<font color="white" size="6px">Chargeback User Interface</font>
+			<img src="partner-capgemini.jpg" style="width: 200px; height: 70px; float:left; " />&nbsp;
+			<font color="white" size="6px">Chargeback User Interface</font>
 				
 			</div>
 			<div class="collapse navbar-collapse" id="chargeLink">
 				<ul class="nav navbar-nav" style="padding-right: 60px;">
-					<li  ><a href="charge_cost_by.html"><font color="white"> Cost by Application</font></a></li>
+					<li  ><a href="charge.html" onmouseover=""><font color="white"> Utilization by Application</font></a></li>
 				</ul>
 			</div>
-			
 		</div>
 	</nav>
 	
@@ -65,7 +82,7 @@ color:#000;background-color:#337ab7;
 		<div  class="row ">
 				<div class="page-header">
 					<p>&nbsp;</p>
-					<h1> Utilization by Application</h1>
+					<h1> Cost by Application</h1>
 				</div>
 		</div>
 		
@@ -78,61 +95,63 @@ color:#000;background-color:#337ab7;
 							
 								<table style="width:100%">
 									<tr>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSelect">Organization</label>
-										<td style="padding-right: 20px; width:33%"><label for="OrgSpace">Space</label>
-										
+										<td style="padding-right: 20px; width:33%"><label for="PreiodSelect">Period : </label>
+											<select name="PreiodSelect" id="PreiodSelect"><option value="Current">Current</option></select></td>
 									</tr>
-									<tr></tr>
 									<tr>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSelect" id="OrgSelect"></select>
-										<td style="padding-right: 20px; width:33%"><select name="OrgSpace" id="OrgSpace"></select>
+									
 									</tr>
-		
 								</table>
+								<br/><br/>
 				<div>
 				<ul class="nav nav-pills">
-				  <li role="presentation"  class=" active tablinks" onclick="getMemoryUsageDetails();getUnusedDetails();openTab(event, 'memoryTab');"><a href="#">Memory</a></li>
-				  <li role="presentation"   class="tablinks" onclick="getCPUUsageDetails();getFreeCPUUsageDetails();openTab(event, 'cpuTab');"><a href="#">CPU</a></li>
-				  <li role="presentation"  class="tablinks" onclick="getDiskUsageDetails();openTab(event, 'diskTab');"><a href="#">Disk</a></li>
+				  <li role="presentation"  class=" active tablinks" onclick="getSummaryCostDetails();openTab(event, 'summaryTab');"><a href="#">Summary</a></li>
+				   <li role="presentation"  class="  tablinks" onclick="getMemoryCostDetails();openTab(event, 'memoryTab');"><a href="#">Memory</a></li>
+				  <li role="presentation"   class=" tablinks" onclick="getCPUCostDetails();openTab(event, 'cpuTab');"><a href="#">CPU</a></li>
+				  <li role="presentation"  class=" tablinks" onclick="getDiskCostDetails();openTab(event, 'diskTab');"><a href="#">Disk</a></li> 
 				</ul>
 				
-				
-				
-				<div id="memoryTab"   class="tabcontent">	
-				   <table><tr>
-				   			<th style="padding-right: 100px">Utilised Memory</th>
-				   			<th style="padding-right: 100px">Unutilised Memory</th>
-				   		</tr>
+				<div id="summaryTab"   class="tabcontent">	
+				   <table>
 				   		<tr>
 							<td style="padding-right: 100px">
-							<canvas id="memory" width="200px" height="400px"></canvas>
+								<canvas id="summary" width="200px" height="400px"></canvas>
+							</td>
+							<td style="padding-right: 100px">
+							<div id="summaryLegend" class="baby-box"></div>
+							
+							</td>
+							
+						</tr>
+				</table>
+				</div>
+				
+				
+				 <div id="memoryTab"    style="visibility: hidden;"  class="tabcontent">	
+				   <table>
+				   		<tr>
+							<td style="padding-right: 100px">
+								<canvas id="memory" width="200px" height="400px"></canvas>
+							</td>
+							<td style="padding-right: 100px">
 							<div id="memoryLegend" class="baby-box"></div>
 							</td>
-							<td style="padding-right: 100px"> 
-							<canvas id="unusedMemory" width="200px" height="400px"></canvas>
-							<div id="unusedMemoryLegend" class="baby-box"></div>
-							</td>
+							
 						</tr>
 				</table>
 				</div>
 				
 				
 				<div id="cpuTab" style="visibility: hidden;" class="tabcontent">
-					<table><tr>
-								<th style="padding-right: 100px">Utilised CPU</th>
-								<th style="padding-right: 100px">Unutilised CPU</th>
-							</tr>
+					<table>
 							<tr>
 								<td style="padding-right: 100px">
-								<canvas id="cpu" width="200px" height="400px"></canvas>
-								<div id="cpuLegend" class="baby-box"></div>
-								
+									<canvas id="cpu" width="200px" height="400px"></canvas>
 								</td>
 								<td style="padding-right: 100px">
-								<canvas id="freeCPU" width="200px" height="400px"></canvas>
-								<div id="freeCPULegend" class="baby-box"></div>
-								
+									<div id="cpuLegend" class="baby-box"></div>
 								</td>
+								
 							</tr>
 					</table>
 				 			
@@ -140,18 +159,17 @@ color:#000;background-color:#337ab7;
 				
 				<div  id="diskTab" style="visibility: hidden;"  class="tabcontent">
 					<table>
-							<tr>
-								<th >Utilised Disk</th>
-							</tr>
+							
 							<tr>
 								<td>
-								<canvas id="disk" width="200px" height="400px"></canvas>
-								<div id="diskLegend" class="baby-box"></div>
-								
+									<canvas id="disk" width="200px" height="400px"></canvas>
+								</td>
+								<td style="padding-right: 100px">
+									<div id="diskLegend" class="baby-box"></div>
 								</td>
 							</tr>
 					</table>
-				</div>
+				</div> 
 				</div>	
 						</div>
 						
@@ -168,5 +186,4 @@ color:#000;background-color:#337ab7;
 
 
 </body>
-
 </html>
